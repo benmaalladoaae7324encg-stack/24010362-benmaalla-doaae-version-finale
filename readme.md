@@ -1,123 +1,102 @@
-Compte Rendu Complet : Détection de Joueurs de Football & Analyse par Régression
-📌 1. Introduction
+<span style="color:#0b5394; font-size:38px;">📘 Compte Rendu Complet : YOLOv8 + Régression</span>
+<span style="color:#38761d; font-size:30px;">1. 🌟 Introduction</span>
 
-Ce projet combine deux approches de Data Science :
+Ce projet combine :
 
-YOLOv8 → pour détecter automatiquement les joueurs, le ballon et les objets dans les images/vidéos de football.
+<span style="color:#1155cc;"><b>YOLOv8</b></span> → détection de joueurs, ballon et objets
 
-La régression → pour analyser et prédire des relations entre les données extraites par YOLO (vitesse, position, distance au ballon, etc.).
+<span style="color:#cc0000;"><b>Régression</b></span> → analyse et prédiction (distance, vitesse, position)
 
-L'objectif est d’utiliser la vision par ordinateur pour extraire des informations, puis employer des modèles statistiques pour les analyser.
+L'idée : YOLO détecte, la régression explique et prédit.
 
-📦 2. Importation des Bibliothèques
+<span style="color:#674ea7; font-size:30px;">2. 📦 Importation des Bibliothèques</span>
 from ultralytics import YOLO
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-Ces bibliothèques permettent :
-
-d’utiliser YOLOv8,
-
-de lire des images/vidéos,
-
-de visualiser les résultats,
-
-et de manipuler les données.
-
-🧠 3. Chargement du Modèle YOLOv8
+<span style="color:#990000; font-size:30px;">3. 🤖 Chargement de YOLOv8</span>
 model = YOLO("yolov8n.pt")
 
 
-yolov8n.pt : version légère du modèle YOLOv8.
+<b>yolov8n.pt</b> : version la plus rapide
 
-Optimisée pour la détection en temps réel.
+idéale pour la détection en temps réel
 
-📂 4. Chargement des Données (data.yaml)
+<span style="color:#6aa84f; font-size:30px;">4. 📂 Données (data.yaml)</span>
 yaml_path = "/kaggle/input/data-updated/data.yaml"
-model = YOLO("yolov8n.pt")
 
 
-Ce fichier contient :
+Contient :
 
-les chemins des images d'entraînement,
+chemins d’images
 
-les annotations des objets,
+annotations
 
-les noms des classes (player, ball, referee…).
+classes : player, ball, referee…
 
-🏋️‍♂️ 5. Entraînement du Modèle
+<span style="color:#0c343d; font-size:30px;">5. 🏋️ Entraînement du Modèle</span>
 model.train(data=yaml_path, epochs=50, imgsz=640)
 
 
-YOLOv8 ajuste ses poids pour détecter correctement :
+<span style="color:#38761d;">✔ Ajuste YOLO pour reconnaître les objets du football</span>
 
-les joueurs,
-
-le ballon,
-
-les zones du terrain.
-
-📊 6. Évaluation du Modèle
+<span style="color:#741b47; font-size:30px;">6. 📊 Évaluation</span>
 metrics = model.val()
-print(metrics)
 
 
-L’évaluation fournit :
+YOLO calcule :
 
-précision,
+précision
 
-rappel (recall),
+recall
 
-mAP (mean Average Precision).
+mAP
 
-🔍 7. Détection sur Image
+<span style="color:#134f5c; font-size:30px;">7. 🔍 Détection Image</span>
 results = model("image.jpg")
 results[0].show()
 
 
 Affiche :
 
-les boîtes de détection,
+boîtes
 
-les classes détectées,
+labels
 
-les scores de confiance.
+scores
 
-🎥 8. Détection sur Vidéo
+<span style="color:#3d85c6; font-size:30px;">8. 🎥 Détection Vidéo</span>
 model.predict(source="video.mp4", show=True)
 
 
-YOLO détecte les objets image par image pour une analyse en temps réel.
+Détection image-par-image en temps réel.
 
-🔢 9. Pourquoi utiliser la régression ?
+<span style="color:#cc0000; font-size:38px;">9. Pourquoi utiliser la Régression ?</span>
 
-YOLO détecte les objets…
-👉 mais il n’explique pas pourquoi certaines variables changent.
+YOLO → <span style="color:#0b5394;">détecte</span>,
+Régression → <span style="color:#38761d;">explique + prédit</span>
 
-La régression sert à :
+4 raisons importantes :
+🔹 <span style="color:#1155cc;">1. Comprendre les relations</span>
 
-analyser les relations entre variables,
+Exemple : vitesse ↣ distance au ballon ?
 
-comprendre les comportements des joueurs,
+🔹 <span style="color:#cc4125;">2. Faire des prédictions</span>
 
-prédire des valeurs futures (distance, position, vitesse…).
+Position future, vitesse future, proximité du ballon.
 
-Elle donne du sens aux données produites par YOLO.
+🔹 <span style="color:#6aa84f;">3. Donner un sens aux données YOLO</span>
 
-📘 10. Analyse de Régression
-🔹 10.1 Régression Linéaire
+YOLO donne des nombres →
+La régression explique pourquoi ils changent.
 
-Utilisée pour prédire une variable continue, par exemple :
+🔹 <span style="color:#674ea7;">4. Analyse tactique</span>
 
-distance entre un joueur et le ballon,
+Comportements, déplacements, influence des actions.
 
-vitesse en fonction de la position,
-
-déplacement dans une direction.
-
-Exemple de code :
+<span style="color:#f1c232; font-size:36px;">10. Analyse de Régression</span>
+<span style="color:#134f5c; font-size:28px;">10.1 Régression Linéaire</span>
 from sklearn.linear_model import LinearRegression
 
 X = np.array(df["player_speed"]).reshape(-1,1)
@@ -126,58 +105,36 @@ y = df["distance_to_ball"]
 model_reg = LinearRegression()
 model_reg.fit(X, y)
 
-print(model_reg.coef_, model_reg.intercept_)
-
 Interprétation :
 
-coef_ = impact de la vitesse sur la distance,
+coef_ positif → plus il va vite, plus il s’éloigne
 
-un coefficient négatif = plus le joueur court vite, plus il se rapproche du ballon.
+coef_ négatif → plus il va vite, plus il se rapproche
 
-🔹 10.2 Régression Polynomiale
-
-Utilisée si la relation n’est pas linéaire, par exemple une courbe.
-
+<span style="color:#38761d; font-size:28px;">10.2 Régression Polynomiale</span>
 from sklearn.preprocessing import PolynomialFeatures
-
 poly = PolynomialFeatures(degree=2)
 X_poly = poly.fit_transform(X)
-model_poly = LinearRegression().fit(X_poly, y)
 
-🔹 10.3 Visualisation
+
+Utile pour les relations non linéaires (courbes).
+
+<span style="color:#0b5394; font-size:28px;">10.3 Visualisation</span>
 plt.scatter(X, y)
 plt.plot(X, model_reg.predict(X), linewidth=3)
-plt.xlabel("Vitesse du joueur")
-plt.ylabel("Distance au ballon")
-plt.title("Régression linéaire")
-plt.show()
 
-🎯 11. Comment YOLOv8 et la Régression travaillent ensemble
-YOLOv8	Régression
-Détecte les objets	Analyse les relations
-Donne des positions, distances, vitesses	Explique pourquoi ces valeurs changent
-Produit des données	Prédit les valeurs futures
-Vision	Intelligence
-✔️ 12. Conclusion
+<span style="color:#741b47; font-size:38px;">11. YOLOv8 + Régression = Analyse Complète</span>
+<table style="width:100%; font-size:20px;"> <tr> <td style="color:#0b5394;"><b>YOLOv8</b></td> <td style="color:#38761d;"><b>Régression</b></td> </tr> <tr> <td>Détecte</td> <td>Explique</td> </tr> <tr> <td>Donne positions</td> <td>Donne relations</td> </tr> <tr> <td>Produits bruts</td> <td>Prédictions</td> </tr> <tr> <td>Vision</td> <td>Analyse</td> </tr> </table>
+<span style="color:#990000; font-size:38px;">12. Conclusion</span>
 
-Ce projet montre comment combiner :
+Grâce à ce projet :
 
-YOLOv8 pour détecter les joueurs et objets dans des images de football,
+YOLOv8 détecte automatiquement joueurs + ballon
 
-la régression pour analyser et prédire les comportements des joueurs.
+La régression analyse leurs mouvements
 
-Ainsi, on obtient un système complet capable :
+Ensemble → un outil puissant pour l’analyse sportive
 
-d’observer,
+Résultat : vision + intelligence + prédiction
 
-d’analyser,
 
-et de comprendre les actions sur le terrain.
-
-C’est une approche puissante pour :
-
-l’analyse tactique,
-
-les statistiques sportives,
-
-les systèmes d’aide à l’arbitrage.
