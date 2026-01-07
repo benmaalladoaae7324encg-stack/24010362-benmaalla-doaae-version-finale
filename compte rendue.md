@@ -415,6 +415,128 @@ Runtime → Change runtime type → Hardware accelerator → GPU
 - [ ] Support pour la segmentation d'instance
 
 ---
+Démonstration de Régression Linéaire et Logistique
+Cette section ajoute une démonstration pratique de deux algorithmes de machine learning fondamentaux : la régression linéaire et la régression logistique. Ces exemples utilisent des données synthétiques générées avec NumPy, et illustrent l'entraînement, la prédiction et la visualisation des résultats à l'aide de scikit-learn et Matplotlib. Le code est conçu pour être exécuté dans un environnement Python comme Google Colab, en complément du script YOLOv8 présenté précédemment.
+
+Objectif de la Démonstration
+Régression Linéaire : Modéliser une relation linéaire entre une variable indépendante (X) et une variable dépendante (y), en ajustant une ligne droite aux données.
+Régression Logistique : Effectuer une classification binaire en modélisant la probabilité d'appartenance à une classe à l'aide d'une fonction sigmoïde.
+Visualisation : Générer des graphiques pour illustrer les prédictions et les performances des modèles.
+Code Implémenté
+Le code suivant peut être ajouté à un notebook Google Colab ou exécuté indépendamment. Il inclut l'importation des bibliothèques, la génération de données, l'entraînement des modèles, et l'affichage des résultats.
+
+python
+
+Copy code
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# ============================================================================
+# LINEAR REGRESSION
+# ============================================================================
+print("\n" + "="*70)
+print("LINEAR REGRESSION DEMONSTRATION")
+print("="*70)
+
+# Generate some synthetic data for linear regression
+np.random.seed(42)
+X_linear = 2 * np.random.rand(100, 1)
+y_linear = 4 + 3 * X_linear + np.random.randn(100, 1)
+
+# Create a Linear Regression model
+lin_reg = LinearRegression()
+lin_reg.fit(X_linear, y_linear)
+
+# Make predictions
+X_new_linear = np.array([[0], [2]])
+y_predict_linear = lin_reg.predict(X_new_linear)
+
+# Plotting linear regression
+plt.figure(figsize=(10, 6))
+plt.scatter(X_linear, y_linear, label='Sample Data')
+plt.plot(X_new_linear, y_predict_linear, 'r-', label='Linear Regression Line')
+plt.xlabel('X (Feature)')
+plt.ylabel('y (Target)')
+plt.title('Linear Regression Example')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+print(f"Linear Regression Coefficients: {lin_reg.coef_[0][0]:.2f}")
+print(f"Linear Regression Intercept: {lin_reg.intercept_[0]:.2f}")
+
+# ============================================================================
+# LOGISTIC REGRESSION
+# ============================================================================
+print("\n" + "="*70)
+print("LOGISTIC REGRESSION DEMONSTRATION")
+print("="*70)
+
+# Generate some synthetic data for logistic regression (binary classification)
+X_logistic = np.random.randn(200, 1) # One feature
+y_logistic = (X_logistic > 0).astype(int) # Binary classes based on X
+# Add some noise to make it less perfectly separable
+y_logistic = y_logistic.flatten() # Ensure y is 1D
+noise_indices = np.random.choice(len(y_logistic), 20, replace=False)
+y_logistic[noise_indices] = 1 - y_logistic[noise_indices]
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_logistic, y_logistic, test_size=0.3, random_state=42)
+
+# Scale the features (important for logistic regression)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Create a Logistic Regression model
+log_reg = LogisticRegression(solver='liblinear', random_state=42)
+log_reg.fit(X_train_scaled, y_train)
+
+# Generate a range of values for plotting the sigmoid curve
+X_plot = np.linspace(-3, 3, 100).reshape(-1, 1)
+X_plot_scaled = scaler.transform(X_plot)
+y_proba = log_reg.predict_proba(X_plot_scaled)[:, 1] # Probability of class 1
+
+# Plotting logistic regression
+plt.figure(figsize=(10, 6))
+plt.scatter(X_train_scaled[y_train==0], y_train[y_train==0], color='blue', label='Class 0 (Training)', alpha=0.6)
+plt.scatter(X_train_scaled[y_train==1], y_train[y_train==1], color='red', label='Class 1 (Training)', alpha=0.6)
+plt.scatter(X_test_scaled[y_test==0], y_test[y_test==0], color='cyan', marker='x', label='Class 0 (Test)', alpha=0.8)
+plt.scatter(X_test_scaled[y_test==1], y_test[y_test==1], color='magenta', marker='x', label='Class 1 (Test)', alpha=0.8)
+plt.plot(X_plot_scaled, y_proba, 'g-', linewidth=2, label='Logistic Regression (P(y=1))')
+
+plt.xlabel('Scaled X (Feature)')
+plt.ylabel('Probability / Class')
+plt.title('Logistic Regression Example')
+plt.legend()
+plt.grid(True)
+plt.ylim(-0.1, 1.1) # Set y-axis limits to clearly show probabilities
+plt.show()
+
+print(f"Logistic Regression Coefficients: {log_reg.coef_[0][0]:.2f}")
+print(f"Logistic Regression Intercept: {log_reg.intercept_[0]:.2f}")
+print(f"Logistic Regression Accuracy on Test Set: {log_reg.score(X_test_scaled, y_test):.2f}")
+Explication des Résultats
+Régression Linéaire :
+Données : 100 points générés synthétiquement avec une relation linéaire bruitée (y = 4 + 3X + bruit).
+Modèle : Ajuste une ligne droite aux données.
+Sortie : Coefficient ≈ 3.00 (pente), Intercept ≈ 4.00 (ordonnée à l'origine). Le graphique montre les points de données et la ligne de régression.
+Régression Logistique :
+Données : 200 points pour classification binaire, avec bruit ajouté pour réalisme. Séparation en ensembles d'entraînement (70%) et de test (30%).
+Prétraitement : Standardisation des features pour améliorer la convergence.
+Modèle : Utilise un solveur 'liblinear' pour la classification binaire.
+Sortie : Coefficient et intercept affichés, précision sur le test (ex. ≈ 0.85). Le graphique montre les classes, les données d'entraînement/test, et la courbe sigmoïde des probabilités.
+Interprétation : La courbe verte représente P(y=1), illustrant comment la régression logistique transforme une entrée linéaire en probabilité.
+Dépendances Requises
+Bibliothèques : NumPy, Matplotlib, scikit-learn (installables via pip install numpy matplotlib scikit-learn).
+Compatibilité : Fonctionne dans Google Colab ou tout environnement Python 3.x avec GPU/CPU.
+Intégration avec le Projet YOLOv8
+Cette démonstration complète le compte rendu en montrant des concepts de base en ML, contrastant avec l'approche avancée de YOLOv8 (détection d'objets).
+Améliorations Futures : Intégrer ces modèles comme pré-entraînement pour des tâches de classification avant la détection YOLO, ou ajouter des métriques comme ROC-AUC.
+
 
 ## 📚 Ressources et Documentation
 
